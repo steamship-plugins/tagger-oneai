@@ -41,33 +41,4 @@ pytest
 
 We have provided sample data in the `test_data/` folder.
 
-## Deploying
 
-Deploy your converter to Steamship by running:
-
-```bash
-ship deploy --register-plugin
-```
-
-That will deploy your app to Steamship and register it as a plugin for use.
-
-## Using
-
-Once deployed, your Convert Plugin can be referenced by the handle in your `steamship.json` file.
-
-```python
-from steamship import Steamship, BlockTypes
-
-MY_PLUGIN_HANDLE = ".. fill this out .."
-
-client = Steamship()
-file = client.create_file(file="./test_data/king_speech.txt")
-file.convert(plugin=MY_PLUGIN_HANDLE).wait()
-file.query(blockType=BlockTypes.Paragraph).wait().data
-```
-
-## Sharing
-
-Plesae share what you've built with hello@steamship.com! 
-
-We would love take a look, hear your suggestions, help where we can, and share what you've made with the community.# tagger-oneai
