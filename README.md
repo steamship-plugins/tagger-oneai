@@ -1,73 +1,23 @@
-# Steamship OneAI Plugin
+# OneAI Tagger Plugin - Steamship
 
 This project contains a Steamship Tagger plugin that enables use of OneAI's text tagging pipeline.
 
-## First Time Setup
+## Configuration
 
-We recommend using Python virtual environments for development.
-To set one up, run the following command from this directory:
+This plugin must be configured with the following fields:
 
-```bash
-python3 -m venv .venv
-```
+* `api_key`    - Your One AI API key
+* `input_type` - Either `conversation` or `article`. [One AI Documentation](https://studio.oneai.com/docs?api=Pipeline+API&item=Expected+Input+Format&accordion=Introduction%2CPipeline+API%2CNode.js+SDK+Reference%2CClustering+API)
+* `skills`     - A CSV list of One AI "skills" that produce tags
 
-Activate your virtual environment by running:
+Example skills are:
 
-```bash
-source .venv/bin/activate
-```
+* `entities` - Tags real-world objects, such as people, organizations, and time frames.
+* `topics` - Tags text with relevant topics.
+* `sentiment` - Tags text with phrases containing positive and negative sentiment: Output tags: `[POS, NEG]`
+* `emotions` - Tags text with phrases describing emotion: Output tags: `[happiness, sadness, anger, surprise, fear]`
+* `highlights` - Tags text with selected highlights: Output tags: `[highlight]`
+* `keywords` - Tags text with selected keywords.
+* `sentences` - Splits sentences by text.
+* `action_items` - Tags text for action items.
 
-Your first time, install the required dependencies with:
-
-```bash
-python -m pip install -r requirements.dev.txt
-python -m pip install -r requirements.txt
-```
-
-## Developing
-
-All the code for this plugin is located in the `src/api.py` file:
-
-* The ParserPlugin class
-* The `/parse` endpoint
-
-## Testing
-
-Tests are located in the `test/test_api.py` file. You can run them with:
-
-```bash
-pytest
-```
-
-We have provided sample data in the `test_data/` folder.
-
-## Deploying
-
-Deploy your converter to Steamship by running:
-
-```bash
-ship deploy --register-plugin
-```
-
-That will deploy your app to Steamship and register it as a plugin for use.
-
-## Using
-
-Once deployed, your Convert Plugin can be referenced by the handle in your `steamship.json` file.
-
-```python
-from steamship import Steamship, BlockTypes
-
-MY_PLUGIN_HANDLE = ".. fill this out .."
-
-client = Steamship()
-file = client.create_file(file="./test_data/king_speech.txt")
-file.convert(plugin=MY_PLUGIN_HANDLE).wait()
-file.query(blockType=BlockTypes.Paragraph).wait().data
-```
-
-## Sharing
-
-Plesae share what you've built with hello@steamship.com! 
-
-We would love take a look, hear your suggestions, help where we can, and share what you've made with the community.# tagger-oneai

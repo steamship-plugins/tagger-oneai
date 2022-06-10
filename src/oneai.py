@@ -1,9 +1,7 @@
 import dataclasses
-import json
-
-import requests
 from typing import List, Optional
 
+import requests
 from steamship import SteamshipError
 from steamship.data.tags.tag import Tag
 
@@ -45,7 +43,7 @@ class OneAiOutputLabel:
             return None
 
         return OneAiOutputLabel(
-            type = d.get("type", None),
+            type=d.get("type", None),
             name=d.get("name", None),
             span=d.get("span", None),
             span_text=d.get("span_text", None),
@@ -59,10 +57,11 @@ class OneAiOutputLabel:
         return Tag.CreateRequest(
             kind=self.type,
             name=self.name,
-            startIdx=self.span[0], # Safe because of check above
-            endIdx=self.span[1], # Safe because of check above
+            startIdx=self.span[0],  # Safe because of check above
+            endIdx=self.span[1],  # Safe because of check above
             value=self.data
         )
+
 
 @dataclasses.dataclass
 class OneAiOutputBlock:
@@ -79,7 +78,7 @@ class OneAiOutputBlock:
             return None
 
         return OneAiOutputBlock(
-            block_id = d.get("block_id", None),
+            block_id=d.get("block_id", None),
             generating_step=d.get("generating_step", None),
             origin_block=d.get("origin_block", None),
             origin_span=d.get("origin_span", None),
@@ -101,12 +100,18 @@ class OneAiResponse:
             return None
 
         return OneAiResponse(
-            input_text = d.get("input_text", None),
+            input_text=d.get("input_text", None),
             status=d.get("status", None),
             error=d.get("error", None),
             output=[OneAiOutputBlock.from_dict(b) for b in d.get("output", [])]
         )
 
+    def to_tags(self) -> List[Tag.CreateRequest]:
+        tags: List[Tag.CreateRequest] = []
+        if self.output and self.output[0]:
+            for label in self.output[0].labels:
+                tags.append(label.to_steamship_tag())
+        return tags
 
 
 class OneAIClient:
@@ -155,7 +160,7 @@ class OneAIClient:
             return ret
         except Exception as ex:
             raise SteamshipError(
-                message="Request from OneAI could not be interpreted as a OneAIResponse object. Exception: {}".format(ex),
+                message="Request from OneAI could not be interpreted as a OneAIResponse object. Exception: {}".format(
+                    ex),
                 error=ex
             )
-

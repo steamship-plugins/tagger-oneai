@@ -1,8 +1,14 @@
 name: Test
-on: push
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
 
 jobs:
   test:
+    name: Run Test Suite
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -15,7 +21,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.x"
-
       - name: Install Virtualenv
         run: |
           python3 -m venv .venv
@@ -31,3 +36,6 @@ jobs:
       - name: Run test suite
         run: |
           pytest
+        env:
+          STEAMSHIP_API_KEY: ${{ inputs.steamship_key_test }}
+          STEAMSHIP_API_BASE: ${{ inputs.steamship_api_base_test }}
