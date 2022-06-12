@@ -1,9 +1,12 @@
 import dataclasses
-from typing import List, Optional
+from typing import List, Optional, cast
 
 import requests
 from steamship import SteamshipError
 from steamship.data.tags.tag import Tag
+from typing import TypedDict
+
+from steamship.utils.dict_mapper import Mapping, reshape_dict
 
 
 @dataclasses.dataclass
@@ -28,88 +31,52 @@ class OneAIInputType:
 class OneAIStatus:
     success = "success"
 
+TAG_MAPPING = {
+    "kind": Mapping(keypath=["skill"], expect_type=str, required=True),
+    "name": Mapping(keypath=["type"], expect_type=str, required=True),
+    "start_idx": Mapping(keypath=["span", 0], expect_type=int, required=True),
+    "end_idx": Mapping(keypath=["span", 1], expect_type=int, required=True),
+    "value": Mapping(keypath=["data"], expect_type=dict, required=False)
+}
 
-@dataclasses.dataclass
-class OneAiOutputLabel:
-    type: str
-    name: str
-    span: List[int]
-    span_text: str
-    data: dict
-
-    @staticmethod
-    def from_dict(d: dict) -> Optional["OneAiOutputLabel"]:
-        if d is None:
-            return None
-
-        return OneAiOutputLabel(
-            type=d.get("type", None),
-            name=d.get("name", None),
-            span=d.get("span", None),
-            span_text=d.get("span_text", None),
-            data=d.get("data", None)
-        )
-
-    def to_steamship_tag(self) -> Optional[Tag.CreateRequest]:
-        if not self.span or len(self.span) != 2:
-            return None
-
-        return Tag.CreateRequest(
-            kind=self.type,
-            name=self.name,
-            startIdx=self.span[0],  # Safe because of check above
-            endIdx=self.span[1],  # Safe because of check above
-            value=self.data
-        )
+class OneAiOutputLabel(TypedDict):
+    type: Optional[str]
+    name: Optional[str]
+    skill: Optional[str]
+    span: Optional[List[int]]
+    span_text: Optional[str]
+    data: Optional[dict]
 
 
-@dataclasses.dataclass
-class OneAiOutputBlock:
-    block_id: str
-    generating_step: str
-    origin_block: str
-    origin_span: List[int]
-    text: str
-    labels: List[OneAiOutputLabel]
+def one_ai_label_to_steamship_tag(label: OneAiOutputLabel) -> Optional[Tag.CreateRequest]:
 
-    @staticmethod
-    def from_dict(d: dict) -> Optional["OneAiOutputBlock"]:
-        if d is None:
-            return None
-
-        return OneAiOutputBlock(
-            block_id=d.get("block_id", None),
-            generating_step=d.get("generating_step", None),
-            origin_block=d.get("origin_block", None),
-            origin_span=d.get("origin_span", None),
-            text=d.get("text", None),
-            labels=[OneAiOutputLabel.from_dict(l) for l in d.get("labels", [])]
-        )
+    if len(label.get("span", [])) != 2:
+        return None
+    return cast(
+        Tag.CreateRequest,
+        reshape_dict(input_dict=label, mappings=TAG_MAPPING, into_base_model=Tag.CreateRequest)
+    )
 
 
-@dataclasses.dataclass
-class OneAiResponse:
+class OneAiOutputBlock(TypedDict):
+    block_id: Optional[str]
+    generating_step: Optional[str]
+    origin_block: Optional[str]
+    origin_span: Optional[List[int]]
+    text: Optional[str]
+    labels: Optional[List[OneAiOutputLabel]]
+
+
+class OneAiResponse(TypedDict):
     input_text: str
     status: str
     error: str
     output: List[OneAiOutputBlock]
 
-    @staticmethod
-    def from_dict(d: dict) -> Optional["OneAiResponse"]:
-        if d is None:
-            return None
-
-        return OneAiResponse(
-            input_text=d.get("input_text", None),
-            status=d.get("status", None),
-            error=d.get("error", None),
-            output=[OneAiOutputBlock.from_dict(b) for b in d.get("output", [])]
-        )
-
     def to_tags(self) -> List[Tag.CreateRequest]:
         tags: List[Tag.CreateRequest] = []
         if self.output and self.output[0]:
-            for label in self.output[0].labels:
+            for label in self.output[0]["labels"]:
                 tags.append(label.to_steamship_tag())
         return tags
 

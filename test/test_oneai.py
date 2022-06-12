@@ -234,14 +234,15 @@ CALL_CENTER_SKILL_EMOTION_ENTITY = {
                                           'input_spans': None, 'span_text': 'Damon', 'data': None}]}]}
 
 
-def _check_response(resp):
-    assert read_test_file("call_center.txt") == resp.input_text
-    assert resp.output is not None
-    assert len(resp.output) == 1
-    output_block = resp.output[0]
-    assert len(output_block.labels) > 0
-    for label in output_block.labels:
-        tag = label.to_steamship_tag()
+def test_response_parsing():
+    resp = cast(OneAiResponse, CALL_CENTER_SKILL_EMOTION_ENTITY)
+    assert read_test_file("call_center.txt") == resp["input_text"]
+    assert resp["output"] is not None
+    assert len(resp["output"]) == 1
+    output_block = resp["output"][0]
+    assert len(output_block["labels"]) > 0
+    for label in output_block["labels"]:
+        tag = one_ai_label_to_steamship_tag(label)
         assert tag.name is not None
         assert tag.kind is not None
         if tag.value is not None:
@@ -250,39 +251,34 @@ def _check_response(resp):
         assert tag.end_idx is not None
 
         # Assert that the labels all perfectly capture text.
-        label = resp.input_text[tag.start_idx:tag.end_idx]
+        label = resp["input_text"][tag.start_idx:tag.end_idx]
         assert label[0] != ' '
         assert label[-1] != ' '
 
         # This is an indirect way to make sure that OneAI is, like us, start-inclusive and end-exclusive in their
         # indexing scheme (Python slice semantics) -- we test the ACTUAL character underneath the end_idx and verify
         # that it is a whitespace or punctuation character (which, for this test dataset, should hold).
-        if tag.end_idx < len(resp.input_text):
-            assert resp.input_text[tag.end_idx] in [' ', '\n', ',', '.', ':', '?']
+        if tag.end_idx < len(resp["input_text"]):
+            assert resp["input_text"][tag.end_idx] in [' ', '\n', ',', '.', ':', '?']
 
 
 
-def test_oneai_live():
-    """Test OneAI client with a live API key. Intended for local development testing."""
-    client = get_oneai_client()
-    if client is None:
-        logging.error("Unable to create live OneAI client. Skipping, rather than failing, test_oneai_live test.")
-        return
+# def test_oneai_live():
+#     """Test OneAI client with a live API key. Intended for local development testing."""
+#     client = get_oneai_client()
+#     if client is None:
+#         logging.error("Unable to create live OneAI client. Skipping, rather than failing, test_oneai_live test.")
+#         return
+#
+#     request = OneAIRequest(
+#         text=read_test_file("call_center.txt"),
+#         input_type=OneAIInputType.conversation,
+#         steps=[
+#             {"skill": "emotions"},
+#             {"skill": "entities"},
+#             {"skill": "keywords"},
+#         ]
+#     )
+#     response = client.request(request)
+#     _check_response(response)
 
-    request = OneAIRequest(
-        text=read_test_file("call_center.txt"),
-        input_type=OneAIInputType.conversation,
-        steps=[
-            {"skill": "emotions"},
-            {"skill": "entities"},
-            {"skill": "keywords"},
-        ]
-    )
-    response = client.request(request)
-    _check_response(response)
-
-
-def test_oneai_saved():
-    """Performs `test_oneai_live` with saved response data, intended for CI/CD use."""
-    response = OneAiResponse.from_dict(CALL_CENTER_SKILL_EMOTION_ENTITY)
-    _check_response(response)
