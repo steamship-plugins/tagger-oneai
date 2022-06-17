@@ -25,3 +25,18 @@ Example skills are:
 * `names` - Names mentioned
 * `numbers` - Numbers mentioned
 
+## Full Example
+
+Full examples are located as Jupyter notebooks in [examples/](examples/)
+
+## Developing
+
+Development instructions are located in [DEVELOPING.md](DEVELOPING.md)
+
+## Testing
+
+Testing instructions are located in [TESTING.md](TESTING.md)
+
+## Deploying
+
+Deployment instructions are located in [DEPLOYING.md](DEPLOYING.md)
