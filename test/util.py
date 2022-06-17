@@ -1,7 +1,14 @@
-import os
 import logging
+import os
+from pathlib import Path
 
-from src.oneai import *
+from steamship import Steamship
+
+from src.utils.oneai import *
+
+
+def get_steamship_client(environment: str) -> Steamship:
+    return Steamship(profile=environment)
 
 
 def get_oneai_client(key: str = None):
@@ -15,6 +22,6 @@ def get_oneai_client(key: str = None):
 
 
 def read_test_file(filename: str):
-    folder = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(folder, '..', 'test_data', filename), 'r') as f:
+    test_data_folder = Path(__file__).parent.parent / "test_data" / "inputs"
+    with (test_data_folder / filename).open() as f:
         return f.read()

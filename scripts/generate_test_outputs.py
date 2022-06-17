@@ -1,13 +1,11 @@
 """Generate testing outputs for various skills."""
-import argparse
 import json
 import logging
 import os
 import sys
-from typing import List, Optional, Tuple
 import pathlib
 
-from src.oneai import OneAIClient, OneAIInputType, OneAIRequest
+from src.utils.oneai import OneAIClient, OneAIInputType, OneAIRequest
 from src.api import OneAITaggerPluginConfig
 
 

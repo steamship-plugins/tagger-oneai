@@ -3,7 +3,6 @@
 
 from typing import List, Type, Dict, Any
 
-from pydantic import validator
 from steamship import Block, Steamship
 from steamship.app import App, create_handler, Response
 from steamship.base.error import SteamshipError
@@ -14,31 +13,25 @@ from steamship.plugin.outputs.block_and_tag_plugin_output import BlockAndTagPlug
 from steamship.plugin.service import PluginRequest
 from steamship.plugin.tagger import Tagger
 
-from src.oneai import OneAIRequest, OneAIClient, OneAIInputType
+from utils.oneai import OneAIInputType, OneAIClient, OneAIRequest
 
 
 class OneAITaggerPluginConfig(Config):
-    api_key: str  # TODO: Ensure this is hard-checked to be not none
+    api_key: str
     skills: List[str]
-    input_type: str
+    input_type: OneAIInputType
 
     def __init__(self, **kwargs):
         if isinstance(kwargs.get("skills", None), str):
             kwargs["skills"] = kwargs["skills"].split(",")
         super().__init__(**kwargs)
 
-    @validator('input_type')
-    def input_type_must_be_valid(cls, v):
-        if v not in [OneAIInputType.conversation, OneAIInputType.article]:
-            raise ValueError(f'must be either {OneAIInputType.conversation} or {OneAIInputType.article}')
-        return v
-
     def step_list(self):
         """Return the list of steps for OneAI to perform, formatted for its API"""
         return [{"skill": skill} for skill in self.skills]
 
 
-class OneAITaggerPlugin(Tagger, App):
+class OneAITagger(Tagger, App):
     def __init__(self, client: Steamship, config: Dict[str, Any]):
         super().__init__(client, config)
 
@@ -49,7 +42,7 @@ class OneAITaggerPlugin(Tagger, App):
     def config_cls(self) -> Type[OneAITaggerPluginConfig]:
         return OneAITaggerPluginConfig
 
-    def run(self, request: PluginRequest[BlockAndTagPluginInput]) -> BlockAndTagPluginOutput:
+    def run(self, request: PluginRequest[BlockAndTagPluginInput]) -> Response[BlockAndTagPluginOutput]:
 
         # TODO: Ensure base Tagger class checks to make sure this is not None
         file = request.data.file
@@ -78,7 +71,7 @@ class OneAITaggerPlugin(Tagger, App):
             # Attach the output block to the response
             output.file.blocks.append(output_block)
 
-        return output
+        return Response(data=output)
 
 
-handler = create_handler(OneAITaggerPlugin)
+handler = create_handler(OneAITagger)
