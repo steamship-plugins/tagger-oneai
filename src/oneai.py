@@ -6,8 +6,6 @@ from steamship import SteamshipError
 from steamship.data.tags.tag import Tag
 from typing import TypedDict
 
-from steamship.utils.dict_mapper import Mapping, reshape_dict
-
 
 @dataclasses.dataclass
 class OneAIRequest:
@@ -31,14 +29,6 @@ class OneAIInputType:
 class OneAIStatus:
     success = "success"
 
-TAG_MAPPING = {
-    "kind": Mapping(keypath=["skill"], expect_type=str, required=True),
-    "name": Mapping(keypath=["type"], expect_type=str, required=True),
-    "start_idx": Mapping(keypath=["span", 0], expect_type=int, required=True),
-    "end_idx": Mapping(keypath=["span", 1], expect_type=int, required=True),
-    "value": Mapping(keypath=["data"], expect_type=dict, required=False)
-}
-
 class OneAiOutputLabel(TypedDict):
     type: Optional[str]
     name: Optional[str]
@@ -49,12 +39,14 @@ class OneAiOutputLabel(TypedDict):
 
 
 def one_ai_label_to_steamship_tag(label: OneAiOutputLabel) -> Optional[Tag.CreateRequest]:
-
     if len(label.get("span", [])) != 2:
         return None
-    return cast(
-        Tag.CreateRequest,
-        reshape_dict(input_dict=label, mappings=TAG_MAPPING, into_base_model=Tag.CreateRequest)
+    return Tag.CreateRequest(
+        kind=label["skill"],
+        name=label["type"],
+        start_idx=label["span"][0],
+        end_idx=label["span"][1],
+        value=label["data"]
     )
 
 
@@ -119,7 +111,7 @@ class OneAIClient:
             )
 
         try:
-            ret = OneAiResponse.from_dict(response_dict)
+            ret = cast(OneAiResponse, response_dict)
             if not ret:
                 raise SteamshipError(
                     message="Request from OneAI could not be interpreted as a OneAIResponse object."

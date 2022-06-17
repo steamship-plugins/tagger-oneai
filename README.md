@@ -19,5 +19,9 @@ Example skills are:
 * `highlights` - Tags text with selected highlights: Output tags: `[highlight]`
 * `keywords` - Tags text with selected keywords.
 * `sentences` - Splits sentences by text.
-* `action_items` - Tags text for action items.
+* `action-items` - Tags text for action items.
+* `article-topics` - Topics from an article
+* `business-entities` - Business Entity labeling
+* `names` - Names mentioned
+* `numbers` - Numbers mentioned
 
