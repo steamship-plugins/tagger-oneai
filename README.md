@@ -1,44 +1,42 @@
-# Steamship OneAI Plugin
+# OneAI Tagger Plugin - Steamship
 
 This project contains a Steamship Tagger plugin that enables use of OneAI's text tagging pipeline.
 
-## First Time Setup
+## Configuration
 
-We recommend using Python virtual environments for development.
-To set one up, run the following command from this directory:
+This plugin must be configured with the following fields:
 
-```bash
-python3 -m venv .venv
-```
+* `api_key`    - Your One AI API key
+* `input_type` - Either `conversation` or `article`. [One AI Documentation](https://studio.oneai.com/docs?api=Pipeline+API&item=Expected+Input+Format&accordion=Introduction%2CPipeline+API%2CNode.js+SDK+Reference%2CClustering+API)
+* `skills`     - A CSV list of One AI "skills" that produce tags
 
-Activate your virtual environment by running:
+Example skills are:
 
-```bash
-source .venv/bin/activate
-```
+* `entities` - Tags real-world objects, such as people, organizations, and time frames.
+* `topics` - Tags text with relevant topics.
+* `sentiment` - Tags text with phrases containing positive and negative sentiment: Output tags: `[POS, NEG]`
+* `emotions` - Tags text with phrases describing emotion: Output tags: `[happiness, sadness, anger, surprise, fear]`
+* `highlights` - Tags text with selected highlights: Output tags: `[highlight]`
+* `keywords` - Tags text with selected keywords.
+* `sentences` - Splits sentences by text.
+* `action-items` - Tags text for action items.
+* `article-topics` - Topics from an article
+* `business-entities` - Business Entity labeling
+* `names` - Names mentioned
+* `numbers` - Numbers mentioned
 
-Your first time, install the required dependencies with:
+## Full Example
 
-```bash
-python -m pip install -r requirements.dev.txt
-python -m pip install -r requirements.txt
-```
+Full examples are located as Jupyter notebooks in [examples/](examples/)
 
 ## Developing
 
-All the code for this plugin is located in the `src/api.py` file:
-
-* The ParserPlugin class
-* The `/parse` endpoint
+Development instructions are located in [DEVELOPING.md](DEVELOPING.md)
 
 ## Testing
 
-Tests are located in the `test/test_api.py` file. You can run them with:
+Testing instructions are located in [TESTING.md](TESTING.md)
 
-```bash
-pytest
-```
+## Deploying
 
-We have provided sample data in the `test_data/` folder.
-
-
+Deployment instructions are located in [DEPLOYING.md](DEPLOYING.md)
