@@ -3,6 +3,7 @@
   "name": "OneAI Tagger",
   "handle": "oneai-tagger",
   "version": "0.0.2",
+  "entrypoint": "src.api.handler",
   "description": "Tags text using the OneAI API.",
   "author": "Steamship",
   "isPublic": true,

@@ -25,6 +25,29 @@ Example skills are:
 * `names` - Names mentioned
 * `numbers` - Numbers mentioned
 
+## Usage
+
+```python
+from steamship import File, Plugin, PluginInstance, Steamship
+
+IMPORTER_HANDLE = "oneai-tagger"
+config = {
+    "api_key": "FILL_IN",
+    "input_type": "FILL_IN",
+    "skills": "FILL_IN"
+}
+
+client = Steamship()
+plugin = Plugin.get(client, IMPORTER_HANDLE).data
+plugin_instance = PluginInstance.create(
+    client,
+    plugin_id=plugin.id,
+    plugin_handle=IMPORTER_HANDLE,
+    upsert=False,
+    config=config,
+).data
+```
+
 ## Full Example
 
 Full examples are located as Jupyter notebooks in [examples/](examples/)
