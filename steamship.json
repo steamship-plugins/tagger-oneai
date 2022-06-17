@@ -18,12 +18,12 @@
     "skills": {
       "type": "string",
       "default": "entities"
-    },
+    }
+  },
   "plugin": {
     "type": "tagger",
     "path": "/tag",
-    "isTrainable": false
-    },
+    "isTrainable": false,
     "transport": "jsonOverHttp",
     "runPath": "/run"
   }
