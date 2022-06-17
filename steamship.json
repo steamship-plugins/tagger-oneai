@@ -6,7 +6,7 @@
   "entrypoint": "src.api.handler",
   "description": "Tags text using the OneAI API.",
   "author": "Steamship",
-  "isPublic": true,
+  "public": true,
   "configTemplate": {
     "apikey": {
       "type": "string"
