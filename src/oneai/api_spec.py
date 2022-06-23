@@ -63,7 +63,7 @@ class OneAIOutputLabel(BaseModel):
 
 
 class OneAIOutputBlock(BaseModel):
-    """A output block inside OneAI's response."""
+    """An output block inside OneAI's response."""
 
     block_id: Optional[str]
     generating_step: Optional[str]
@@ -74,7 +74,7 @@ class OneAIOutputBlock(BaseModel):
 
 
 class OneAIResponse(BaseModel):
-    """OneAI's response."""
+    """OneAI response."""
 
     input_text: str
     status: str

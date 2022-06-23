@@ -1,6 +1,6 @@
 """Steamship OneAI Tagger.
 
-Enables you to use one or more OneAI skills to tag Blocks that belong to a File.
+Enables you to tag the Blocks of a File using one or more OneAI skills.
 """
 
 from typing import Any, Dict, List, Type
@@ -54,7 +54,7 @@ class OneAITagger(Tagger):
         if oneai_client is None:
             raise SteamshipError(
                 message="Unable to create OneAIClient. "
-                "Please make your plugin configuration contained a valid `api_key`."
+                "Please make sure your plugin configuration contains a valid `api_key`."
             )
 
         file = request.data.file

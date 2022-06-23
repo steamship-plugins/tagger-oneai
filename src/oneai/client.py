@@ -7,6 +7,8 @@ from steamship import SteamshipError
 
 from oneai.api_spec import OneAIInputType, OneAIRequest, OneAIResponse
 
+OneAIConversation = List[Dict[str, str]]
+
 
 class OneAIClient:
     """Convenience class to interact with OneAI."""
@@ -18,7 +20,7 @@ class OneAIClient:
 
     def request(
         self,
-        input: Union[str, List[Dict[str, str]]],
+        input: Union[str, OneAIConversation],
         input_type: OneAIInputType,
         steps: List[Dict[str, Any]],
     ) -> OneAIResponse:
