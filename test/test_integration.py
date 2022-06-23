@@ -7,7 +7,7 @@ from test.utils import create_file, get_steamship_client
 import pytest
 from steamship import File, Plugin, PluginInstance
 
-ENVIRONMENT = "staging"
+ENVIRONMENT = "test"
 TAGGER_HANDLE = "oneai-tagger"
 
 

@@ -68,14 +68,14 @@ class OneAITagger(Tagger):
                     }
                     for speaker_tag in speaker_tags
                 ]
+                input_type = OneAIInputType.CONVERSATION
             else:
                 text = block.text
+                input_type = OneAIInputType.AUTO
 
             response = oneai_client.request(
                 input=text,
-                input_type=OneAIInputType.CONVERSATION
-                if isinstance(text, list)
-                else OneAIInputType.AUTO,
+                input_type=input_type,
                 steps=self.config.steps,
             )
             if response:
