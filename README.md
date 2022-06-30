@@ -26,31 +26,51 @@ Example skills are:
 * `numbers` - Numbers mentioned
 
 ## Usage
+This example uses the `action-items` skill of OneAI via Steamship.
 
-```python
-from steamship import File, Plugin, PluginInstance, Steamship
+To authenticate with Steamship, install the Steamship CLI with:
 
-IMPORTER_HANDLE = "oneai-tagger"
-config = {
-    "api_key": "FILL_IN",
-    "input_type": "FILL_IN",
-    "skills": "FILL_IN"
-}
-
-client = Steamship()
-plugin = Plugin.get(client, IMPORTER_HANDLE).data
-plugin_instance = PluginInstance.create(
-    client,
-    plugin_id=plugin.id,
-    plugin_handle=IMPORTER_HANDLE,
-    upsert=False,
-    config=config,
-).data
+```bash
+> npm install -g @steamship/cli
 ```
 
-## Full Example
+And then login with:
 
-Full examples are located as Jupyter notebooks in [examples/](examples/)
+```bash
+> ship login
+```
+
+```python
+from steamship import Steamship, Plugin, PluginInstance, File, Block, Tag
+PLUGIN_HANDLE = 'oneai-tagger'
+PLUGIN_CONFIG = {
+    "skills": 'action-items',
+    "input_type": 'article',
+    "api_key": "84ae4e01-e565-4791-a30c-181534f3eef4"
+}
+
+steamship = Steamship(profile="staging") # Without arguments, credentials in ~/.steamship.json will be used.
+oneai_plugin = Plugin.get(client=steamship, handle=PLUGIN_HANDLE).data # Managed globally by Steamship
+oneai_plugin_instance = PluginInstance.create(
+    client=steamship,
+    plugin_id=oneai_plugin.id,
+    config=PLUGIN_CONFIG
+).data
+
+file = File.create(
+    client=steamship,
+    blocks=[Block.CreateRequest(text="YOUR_TEXT", tags=[Tag.CreateRequest(name="Hi")]) ]
+).data
+
+tag_results = file.tag(plugin_instance=oneai_plugin_instance.handle)
+tag_results.wait()
+
+file = file.refresh().data
+for block in file.blocks:
+    for tag in file.blocks.tags:
+        text = block.text[tag.start_idx or 0:tag.end_idx or -1]
+        print(f"[{tag.kind} / {tag.name}]\n{text}")
+```
 
 ## Developing
 

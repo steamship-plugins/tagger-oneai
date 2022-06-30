@@ -2,7 +2,7 @@
   "type": "plugin",
   "name": "OneAI Tagger",
   "handle": "oneai-tagger",
-  "version": "0.0.5",
+  "version": "0.0.10",
   "entrypoint": "api.handler",
   "description": "Tags text using the OneAI API.",
   "author": "Steamship",
@@ -11,13 +11,12 @@
     "api_key": {
       "type": "string"
     },
+    "skills": {
+      "type": "string"
+    },
     "input_type": {
       "type": "string",
-      "default": "article"
-    },
-    "skills": {
-      "type": "string",
-      "default": "entities"
+      "default": "auto-detect"
     }
   },
   "plugin": {
