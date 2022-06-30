@@ -60,7 +60,8 @@ class OneAITagger(Tagger):
         file = request.data.file
         for block in file.blocks:
             # Create tags for that block via OneAI and add them
-            if speaker_tags := [tag for tag in block.tags if tag.kind == "Speaker"]:
+            if speaker_tags := [tag for tag in block.tags if tag.kind.lower() == "speaker"]:
+                speaker_tags = sorted(speaker_tags, key=lambda x: x.start_idx)
                 text = [
                     {
                         "speaker": speaker_tag.name,
