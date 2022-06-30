@@ -2,7 +2,7 @@
   "type": "plugin",
   "name": "OneAI Tagger",
   "handle": "oneai-tagger",
-  "version": "0.0.2",
+  "version": "0.0.10",
   "entrypoint": "api.handler",
   "description": "Tags text using the OneAI API.",
   "author": "Steamship",
